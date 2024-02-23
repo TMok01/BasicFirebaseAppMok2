@@ -22,7 +22,7 @@ var key = ""
         self.quan = quan
     }
     
-    let dict = ["item": item, "amount": quan] as [String: Any]
+    //let dict = ["item": item, "amount": quan] as [String: Any]
     
     
     
