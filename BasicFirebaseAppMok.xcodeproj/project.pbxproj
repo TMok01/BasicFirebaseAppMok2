@@ -91,7 +91,6 @@
 		935E472F2B7D0E850092C24B = {
 			isa = PBXGroup;
 			children = (
-				938F9F662B84FE2500320A7B /* Items.swift */,
 				935E473A2B7D0E850092C24B /* BasicFirebaseAppMok */,
 				935E47512B7D0E870092C24B /* BasicFirebaseAppMokTests */,
 				935E475B2B7D0E870092C24B /* BasicFirebaseAppMokUITests */,
@@ -112,6 +111,7 @@
 		935E473A2B7D0E850092C24B /* BasicFirebaseAppMok */ = {
 			isa = PBXGroup;
 			children = (
+				938F9F662B84FE2500320A7B /* Items.swift */,
 				935E473B2B7D0E850092C24B /* AppDelegate.swift */,
 				935E473D2B7D0E850092C24B /* SceneDelegate.swift */,
 				935E473F2B7D0E850092C24B /* ViewController.swift */,

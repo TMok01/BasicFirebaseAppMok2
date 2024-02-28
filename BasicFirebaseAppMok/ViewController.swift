@@ -16,6 +16,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var ref: DatabaseReference!
     
     var items = [String]()
+    var itms = [Items]()
     
     @IBOutlet weak var itemInputList: UITextField!
     
@@ -32,29 +33,45 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
    
         ref.child("items").observe(.childAdded, with: { (snapshot) in
                  
-            let n = snapshot.value as! String
-                  
-            if !self.items.contains(n){
-            self.items.append(n)
-                   }
+            let n = snapshot.value as! [String: Any]
+            var s = Items(dict: n)
+            s.key = snapshot.key
+            self.itms.append(s)
+            self.tableViewOutlet.reloadData()
                })
         
-        ref.child("items").observeSingleEvent(of: .value, with: { snapshot in
-    print("--inital load has completed and the last user was read--")
-                    print(self.items)
-                    })
-
+        ref.child("items").observe(.childRemoved, with: { [self] (snapshot) in
+            
+            let n = snapshot.value as! [String: Any]
+            
+            var s = Items(dict: n)
+            s.key = snapshot.key
+            
+            for i in 0..<itms.count {
+                if(self.itms[i].key == snapshot.key) {
+                    self.itms.remove(at: i)
+                    self.tableViewOutlet.reloadData()
+                    break
+                }
+            }
+            
+        })
+        
+        self.tableViewOutlet.reloadData()
 
     }
 
     
     @IBAction func addToListButton(_ sender: Any) {
-        var item = itemInputList.text!
+        var itemInput = itemInputList.text!
         var amount = "\(itemAmountList.text!)"
-        ref.child("Items").childByAutoId().setValue(item)
+        ref.child("Items").childByAutoId().setValue(itemInput)
         ref.child("Item Amount").childByAutoId().setValue(amount)
         
-        print(item)
+        var itemObj = Items(item: itemInputList.text!, quan: Int(itemAmountList.text!) ?? 0)
+        itemObj.saveToFireBase()
+        
+        print(itemInput)
         print(amount)
     }
     
@@ -62,13 +79,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return itms.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCell(withIdentifier: "myCell")!
-        cell.textLabel?.text = items[indexPath.row]
+        cell.textLabel?.text = itms[indexPath.row].item
         return cell
+        
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            itms[indexPath.row].deleteFromFireBase()
+            itms.remove(at: indexPath.row)
+            self.tableViewOutlet.reloadData()
+        }
     }
     
     
